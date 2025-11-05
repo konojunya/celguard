@@ -105,11 +105,13 @@ func fail(format string, a ...any) {
 }
 
 func main() {
+	var cfgPath string
 	if len(os.Args) < 2 {
-		fail("missing config path argument")
+		cfgPath = ".github/prlint.yaml"
+	} else {
+		cfgPath = os.Args[1]
 	}
 
-	cfgPath := os.Args[1]
 	cfg, err := ReadConfig(cfgPath)
 	if err != nil {
 		fail("failed to read config: %v", err)
