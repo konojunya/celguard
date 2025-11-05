@@ -67,7 +67,7 @@ func run(event *Event, cfg *Config) error {
 		}
 
 		truth, ok := out.Value().(bool)
-		if !ok && out.Type() == cel.BoolType {
+		if !ok && out.Type() == types.BoolType {
 			truth = out == types.True
 			ok = true
 		}

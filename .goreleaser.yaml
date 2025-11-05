@@ -2,7 +2,7 @@ project_name: prlint
 
 builds:
   - id: prlint
-    main: main.go
+    main: .
     env:
       - CGO_ENABLED=0
     goos: [linux]
