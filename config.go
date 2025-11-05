@@ -4,12 +4,28 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"gopkg.in/yaml.v3"
 )
 
-func ReadConfig(path string) (*Config, error) {
-	b, err := os.ReadFile(path)
+func resolveConfigPath(path string) string {
+	if filepath.IsAbs(path) {
+		return path
+	}
+	if gw := os.Getenv("GITHUB_WORKSPACE"); gw != "" {
+		return filepath.Join(gw, path)
+	}
+	return path
+}
+
+func ReadConfig() (*Config, error) {
+	path := ".github/prlint.yaml"
+	if len(os.Args) > 1 {
+		path = os.Args[1]
+	}
+
+	b, err := os.ReadFile(resolveConfigPath(path))
 	if err != nil {
 		return nil, err
 	}

@@ -7,6 +7,6 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /bin/prlint .
 
 FROM gcr.io/distroless/base-debian12
-WORKDIR /work
+WORKDIR /github/workspace
 COPY --from=builder /bin/prlint /usr/local/bin/prlint
 ENTRYPOINT ["/usr/local/bin/prlint"]

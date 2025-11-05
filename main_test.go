@@ -209,6 +209,96 @@ func TestRun(t *testing.T) {
 			wantErrMsg: "PRLint failed.\n[labels] Labels must contain 'feature'",
 			wantErr:    true,
 		},
+		"Pass - title matches conventional commits (feat)": {
+			pr: &Event{
+				PullRequest: PullRequest{
+					Title: "feat: add new feature",
+				},
+			},
+			cfg: &Config{
+				"title": {
+					CEL:   "value.matches('^(feat|fix|docs|style|refactor|test|chore): .+')",
+					Error: "PR title must follow conventional commits format",
+				},
+			},
+			wantErrMsg: "",
+			wantErr:    false,
+		},
+		"Pass - title matches conventional commits (fix)": {
+			pr: &Event{
+				PullRequest: PullRequest{
+					Title: "fix: fix bug",
+				},
+			},
+			cfg: &Config{
+				"title": {
+					CEL:   "value.matches('^(feat|fix|docs|style|refactor|test|chore): .+')",
+					Error: "PR title must follow conventional commits format",
+				},
+			},
+			wantErrMsg: "",
+			wantErr:    false,
+		},
+		"Failed - title does not match conventional commits (invalid prefix)": {
+			pr: &Event{
+				PullRequest: PullRequest{
+					Title: "invalid: example",
+				},
+			},
+			cfg: &Config{
+				"title": {
+					CEL:   "value.matches('^(feat|fix|docs|style|refactor|test|chore): .+')",
+					Error: "PR title must follow conventional commits format",
+				},
+			},
+			wantErrMsg: "PRLint failed.\n[title] PR title must follow conventional commits format",
+			wantErr:    true,
+		},
+		"Failed - title does not match conventional commits (no colon)": {
+			pr: &Event{
+				PullRequest: PullRequest{
+					Title: "feat add new feature",
+				},
+			},
+			cfg: &Config{
+				"title": {
+					CEL:   "value.matches('^(feat|fix|docs|style|refactor|test|chore): .+')",
+					Error: "PR title must follow conventional commits format",
+				},
+			},
+			wantErrMsg: "PRLint failed.\n[title] PR title must follow conventional commits format",
+			wantErr:    true,
+		},
+		"Failed - title does not match conventional commits (no space after colon)": {
+			pr: &Event{
+				PullRequest: PullRequest{
+					Title: "feat:new feature",
+				},
+			},
+			cfg: &Config{
+				"title": {
+					CEL:   "value.matches('^(feat|fix|docs|style|refactor|test|chore): .+')",
+					Error: "PR title must follow conventional commits format",
+				},
+			},
+			wantErrMsg: "PRLint failed.\n[title] PR title must follow conventional commits format",
+			wantErr:    true,
+		},
+		"Failed - title does not match conventional commits (empty after colon)": {
+			pr: &Event{
+				PullRequest: PullRequest{
+					Title: "feat: ",
+				},
+			},
+			cfg: &Config{
+				"title": {
+					CEL:   "value.matches('^(feat|fix|docs|style|refactor|test|chore): .+')",
+					Error: "PR title must follow conventional commits format",
+				},
+			},
+			wantErrMsg: "PRLint failed.\n[title] PR title must follow conventional commits format",
+			wantErr:    true,
+		},
 	}
 
 	for name, tc := range testCases {
