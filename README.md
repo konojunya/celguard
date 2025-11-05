@@ -6,12 +6,13 @@ A GitHub Action that validates Pull Requests using [Common Expression Language (
 
 It reads rules from `.github/prlint.yaml` and ensures your PR title, body, branch, labels, etc. follow your team's conventions.
 
+![](./screenshots/screen.png)
+
 ## ✨ Features
 
 - 🔍 **CEL-based rules** — powerful and flexible expression syntax (regex, list operations, logic)
 - ⚙️ **Custom config per repo** — define rules in `.github/prlint.yaml`
-- 🧪 **Go implementation** — single binary, no Node.js dependency
-- 🪶 **Docker-based Action** — lightweight, portable, reproducible
+- 🧪 **Go implementation** — single binary, so fast
 
 ## 🚀 Quick Start
 
