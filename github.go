@@ -53,29 +53,39 @@ func findExistingComment(ctx context.Context, client *github.Client, owner, repo
 }
 
 func upsertFailedComment(ctx context.Context, client *github.Client, owner, repo string, prNumber int, body string) error {
+	content := prlintMarker + "\n" + body
+
 	existing, err := findExistingComment(ctx, client, owner, repo, prNumber)
 	if err != nil {
 		return err
 	}
-
-	content := fmt.Sprintf("%s\n%s", prlintMarker, body)
 	if existing != nil {
 		_, _, err := client.Issues.EditComment(ctx, owner, repo, existing.GetID(), &github.IssueComment{Body: &content})
 		return err
 	}
-
 	_, _, err = client.Issues.CreateComment(ctx, owner, repo, prNumber, &github.IssueComment{Body: &content})
 	return err
 }
 
 func deleteFailedComment(ctx context.Context, client *github.Client, owner, repo string, prNumber int) error {
-	existing, err := findExistingComment(ctx, client, owner, repo, prNumber)
-	if err != nil {
-		return err
+	opt := &github.IssueListCommentsOptions{ListOptions: github.ListOptions{PerPage: 100}}
+	for {
+		cs, resp, err := client.Issues.ListComments(ctx, owner, repo, prNumber, opt)
+		if err != nil {
+			return fmt.Errorf("list comments: %w", err)
+		}
+		for _, c := range cs {
+			if c.Body != nil && strings.Contains(*c.Body, prlintMarker) {
+				if _, err := client.Issues.DeleteComment(ctx, owner, repo, c.GetID()); err != nil {
+					return fmt.Errorf("delete comment: %w", err)
+				}
+			}
+		}
+		if resp.NextPage == 0 {
+			break
+		}
+		opt.Page = resp.NextPage
 	}
-	if existing == nil {
-		return nil
-	}
-	_, err = client.Issues.DeleteComment(ctx, owner, repo, existing.GetID())
-	return err
+
+	return nil
 }
