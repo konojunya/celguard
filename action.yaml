@@ -1,4 +1,4 @@
-name: PRLint
+name: celguard 
 description: Pull Request Linter with CEL
 author: konojunya
 inputs:
