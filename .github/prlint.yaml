@@ -1,0 +1,3 @@
+title:
+  cel: "value.matches('^(feat|fix|docs|style|refactor|test|chore): .+')"
+  error: PR title must follow conventional commits format

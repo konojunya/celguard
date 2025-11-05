@@ -21,13 +21,13 @@ Create `.github/prlint.yaml` in your repository root.
 
 ```yaml
 title:
-  cel: value.matches('^(feat|fix|docs|style|refactor|test|chore): .+')
+  cel: "value.matches('^(feat|fix|docs|style|refactor|test|chore): .+')"
   error: PR title must follow conventional commits format
 head_ref:
-  cel: !value.matches('^(main|master|develop)$')
+  cel: "!value.matches('^(main|master|develop)$')"
   error: Direct commits to main/master/develop are not allowed
 labels:
-  cel: value.exists(l, l in ['bug', 'enhancement', 'documentation'])
+  cel: "value.exists(l, l in ['bug', 'enhancement', 'documentation'])"
   error: At least one of [bug, enhancement, documentation] label is required
 ```
 
