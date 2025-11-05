@@ -1,3 +1,5 @@
+example pr diff
+
 # PR Lint
 
 [![GitHub Actions](https://img.shields.io/github/actions/workflow/status/konojunya/prlint/ci.yaml?branch=main)](https://github.com/konojunya/prlint/actions)
