@@ -110,10 +110,14 @@ func main() {
 		fail("failed to read config: %v", err)
 	}
 
+	fmt.Println("config:", cfg)
+
 	event, err := LoadEventFromGitHub()
 	if err != nil {
 		fail("failed to load event from GitHub: %v", err)
 	}
+
+	fmt.Println("event:", event)
 
 	if err := run(event, cfg); err != nil {
 		fmt.Println(err.Error())
