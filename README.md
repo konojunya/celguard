@@ -1,6 +1,4 @@
-example pr diff
-
-# PR Lint
+# celguard 🛡️
 
 [![GitHub Actions](https://img.shields.io/github/actions/workflow/status/konojunya/celguard/ci.yaml?branch=main)](https://github.com/konojunya/celguard/actions)
 
