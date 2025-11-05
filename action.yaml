@@ -61,6 +61,8 @@ runs:
         mv prlint_linux_x86_64 prlint
     - name: run prlint
       shell: bash
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
       run: ./prlint ${{ inputs.config }}
 
 branding:

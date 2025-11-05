@@ -83,20 +83,6 @@ For each key, define rules in the following format:
 
 ## 🛠️ Development
 
-### Running Locally
-
-```bash
-# Clone the repository
-git clone https://github.com/konojunya/prlint.git
-cd prlint
-
-# Build
-go build -o prlint .
-
-# Run (GITHUB_EVENT_PATH environment variable is required)
-GITHUB_EVENT_PATH=/path/to/event.json ./prlint .github/prlint.yaml
-```
-
 ### Testing
 
 ```bash

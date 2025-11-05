@@ -24,6 +24,7 @@ type PullRequestLabel struct {
 }
 
 type PullRequest struct {
+	Number int                `json:"number"`
 	Title  string             `json:"title"`
 	Body   string             `json:"body"`
 	User   PullRequestUser    `json:"user"`

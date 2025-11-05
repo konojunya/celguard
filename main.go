@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"strings"
@@ -119,10 +120,53 @@ func main() {
 
 	fmt.Println("event:", event)
 
-	if err := run(event, cfg); err != nil {
-		fmt.Println(err.Error())
+	var outBuf strings.Builder
+	err = func() error {
+		err = run(event, cfg)
+		if err != nil {
+			outBuf.WriteString(err.Error())
+		}
+
+		return err
+	}()
+
+	if os.Getenv("GITHUB_EVENT_NAME") != "pull_request" {
+		if err != nil {
+			fmt.Println(outBuf.String())
+			os.Exit(1)
+		}
+		fmt.Println("PRLint passed")
+		return
+	}
+
+	ownerRepo := os.Getenv("GITHUB_REPOSITORY")
+	slash := strings.IndexByte(ownerRepo, '/')
+	owner, repo := ownerRepo[:slash], ownerRepo[slash+1:]
+	ctx := context.Background()
+	gh, ghErr := GitHubClient(ctx)
+	// if github client creation fails, only print the error message and exit with status 1
+	if ghErr != nil {
+		fmt.Printf("failed to create GitHub client: %v", ghErr)
+		if err != nil {
+			fmt.Println(outBuf.String())
+			os.Exit(1)
+		}
+		fmt.Println("PRLint passed")
+		return
+	}
+
+	if err != nil {
+		header := "### ❌ PRLint failed"
+		body := fmt.Sprintf("%s\n\n```\n%s\n```", header, outBuf.String())
+		if cErr := upsertFailedComment(ctx, gh, owner, repo, event.PullRequest.Number, body); cErr != nil {
+			fmt.Printf("warn: comment upsert: %v\n", cErr)
+		}
+		fmt.Println(outBuf.String())
 		os.Exit(1)
 	}
 
+	if dErr := deleteFailedComment(ctx, gh, owner, repo, event.PullRequest.Number); dErr != nil {
+		fmt.Printf("warn: comment delete: %v\n", dErr)
+	}
 	fmt.Println("PRLint passed")
 }
