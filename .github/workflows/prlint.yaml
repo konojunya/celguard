@@ -4,11 +4,12 @@ on:
     types: [opened, synchronize, reopened, edited]
 
 permissions:
-  contents: write
+  contents: read
+  pull-requests: write
 
 jobs:
   prlint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: konojunya/prlint@v1.0.4
+      - uses: konojunya/prlint@v1.0.5
