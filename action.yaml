@@ -19,6 +19,7 @@ runs:
         TAG:  ${{ github.action_ref }}
       run: |
         set -euo pipefail
+        echo "TAG=$TAG"
         base="https://github.com/konojunya/celguard/releases/download/${TAG}"
         curl -LsSf "${base}/celguard_${TAG#v}_linux_amd64.tar.gz" -o "celguard_${TAG#v}_linux_amd64.tar.gz"
         curl -LsSf "${base}/checksums.txt" -o checksums.txt
