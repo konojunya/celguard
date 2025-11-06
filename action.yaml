@@ -22,6 +22,9 @@ runs:
         set -euo pipefail
         REPO="${GITHUB_ACTION_REPOSITORY}"
         REF="${GITHUB_ACTION_REF}"
+
+        echo "REPO=$REPO"
+        echo "REF=$REF"
         
         resolve_tag() {
           local ref="$1"
@@ -42,6 +45,7 @@ runs:
         }
 
         TAG="$(resolve_tag "$REF")"
+        echo "TAG=$TAG"
         if [[ -z "${TAG:-}" || "$TAG" == "null" ]]; then
           echo "::error::Failed to resolve celguard tag from REF=$REF"
           exit 2
