@@ -22,25 +22,28 @@ runs:
         set -euo pipefail
         REPO="${GITHUB_ACTION_REPOSITORY}"
         REF="${GITHUB_ACTION_REF}"
-
-        pick_tag() {
+        
+        resolve_tag() {
           local ref="$1"
-          if [[ "$ref" =~ ^v[0-9]+(\.[0-9]+){0,2}$ ]]; then
-            if [[ "$ref" =~ ^v[0-9]+$ ]]; then
-              gh release list -R "$REPO" --limit 100 --json tagName \
-                | jq -r '.[].tagName | select(startswith("'"$ref"'."))' \
-                | sort -Vr | head -n1
-            else
-              echo "$ref"
-            fi
+
+          if [[ "$ref" =~ ^v[0-9]+(\.[0-9]+){1,2}$ ]]; then
+            echo "$ref"
             return
           fi
+
+          if [[ "$ref" =~ ^v[0-9]+$ ]]; then
+            gh release list -R "$REPO" --limit 200 --json tagName \
+              | jq -r '.[].tagName | select(startswith("'"$ref"'."))' \
+              | sort -Vr | head -n1
+            return
+          fi
+
           gh release view -R "$REPO" --json tagName -q .tagName
         }
 
-        TAG="$(pick_tag "$REF")"
-        if [[ -z "${TAG:-}" ]]; then
-          echo "::error::Failed to resolve release tag (REF=$REF)"
+        TAG="$(resolve_tag "$REF")"
+        if [[ -z "${TAG:-}" || "$TAG" == "null" ]]; then
+          echo "::error::Failed to resolve celguard tag from REF=$REF"
           exit 2
         fi
         echo "tag=$TAG" >> "$GITHUB_OUTPUT"
