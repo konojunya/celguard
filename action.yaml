@@ -13,49 +13,12 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Resolve tag to download
-      id: tag
-      shell: bash
-      env:
-        GH_TOKEN: ${{ github.token }}
-        ACTION_REF:  ${{ github.action_ref }}
-      run: |
-        set -euo pipefail
-        REPO=konojunya/celguard
-        REF="${ACTION_REF}"
-
-        echo "REF=$REF"
-        
-        resolve_tag() {
-          local ref="$1"
-
-          if [[ "$ref" =~ ^v[0-9]+(\.[0-9]+){1,2}$ ]]; then
-            echo "$ref"
-            return
-          fi
-
-          if [[ "$ref" =~ ^v[0-9]+$ ]]; then
-            gh release list -R "$REPO" --limit 200 --json tagName \
-              | jq -r '.[].tagName | select(startswith("'"$ref"'."))' \
-              | sort -Vr | head -n1
-            return
-          fi
-
-          gh release view -R "$REPO" --json tagName -q .tagName
-        }
-
-        TAG="$(resolve_tag "$REF")"
-        echo "TAG=$TAG"
-        if [[ -z "${TAG:-}" || "$TAG" == "null" ]]; then
-          echo "::error::Failed to resolve celguard tag from REF=$REF"
-          exit 2
-        fi
-        echo "tag=$TAG" >> "$GITHUB_OUTPUT"
     - name: download celguard
       shell: bash
+      env:
+        TAG:  ${{ github.action_ref }}
       run: |
         set -euo pipefail
-        TAG="${{ steps.tag.outputs.tag }}"
         base="https://github.com/konojunya/celguard/releases/download/${TAG}"
         curl -LsSf "${base}/celguard_${TAG#v}_linux_amd64.tar.gz" -o "celguard_${TAG#v}_linux_amd64.tar.gz"
         curl -LsSf "${base}/checksums.txt" -o checksums.txt
